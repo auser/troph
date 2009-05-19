@@ -36,8 +36,6 @@ module Troph
     def queue(t, o={}, &block)
       if block
         @queues << Queue.new(t, o, &block)
-      else
-        MQ.queue(t)
       end      
     end
     

@@ -15,5 +15,10 @@ EOS
     
   run do |command|
     puts "Starting a server..."
+    
+    server do
+      
+    end
+    
   end
 end

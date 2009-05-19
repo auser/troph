@@ -9,7 +9,7 @@ class TrophApi < Troph::Base
       puts msg
     end
     
-    q = queue "awesome1"
+    # q = queue "awesome1"
     # q.publish("hello 1")
         
   end

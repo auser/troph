@@ -5,13 +5,11 @@ require 'amqp'
 require 'mq'
 require 'socket'
 
-require "client"
-require "forker"
-require "node_store"
-
 require "messaging/queue"
 require "messaging/server"
-require "messaging/types"
+
+require "p2p/types"
+require "p2p/node_store"
 
 module Troph
   class Base
