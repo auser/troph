@@ -1,0 +1,19 @@
+#!/usr/bin/env ruby
+$:.unshift(File.dirname(__FILE__) + "/../lib")
+require "troph"
+require 'git-style-binary/command'
+
+GitStyleBinary.command do  
+  version "Troph Server"
+  banner <<-EOS
+Usage: #{$0} #{all_options_string} COMMAND [ARGS]
+
+  Start a troph serve
+
+See 'troph help COMMAND' for more information on a specific command.
+EOS
+    
+  run do |command|
+    puts "Starting a server..."
+  end
+end

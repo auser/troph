@@ -1,0 +1,17 @@
+require "#{::File.dirname(__FILE__)}/lib/troph"
+require "mq"
+
+class TrophApi < Troph::Base
+    
+  server do
+        
+    queue "awesome" do |msg|
+      puts msg
+    end
+    
+    q = queue "awesome1"
+    # q.publish("hello 1")
+        
+  end
+  
+end

@@ -1,0 +1,29 @@
+#!/usr/bin/env ruby
+$:.unshift(File.dirname(__FILE__) + "/../lib")
+require "troph"
+require 'git-style-binary/command'
+
+GitStyleBinary.primary do  
+  version "Troph"  
+  banner <<-EOS
+Usage: #{$0} #{all_options_string} COMMAND [ARGS]
+
+The troph subcommands commands are:
+  \#{GitStyleBinary.pretty_known_subcommands(:short).join("  ")}
+
+See 'troph help COMMAND' for more information on a specific command.
+EOS
+    
+  run do |command|
+    subcommands = GitStyleBinary.list_subcommands
+    
+    puts <<-EOE
+  Usage: troph COMMAND [ARGS]
+
+  The troph subcommands commands are:
+    #{subcommands}
+
+  See 'troph help COMMAND' for more information on a specific command.
+    EOE
+  end
+end
