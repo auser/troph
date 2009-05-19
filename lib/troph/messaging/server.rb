@@ -18,14 +18,11 @@ module Troph
     end
         
     def run      
-      Signal.trap('INT') { AMQP.stop }
-      Signal.trap('TERM'){ AMQP.stop }
-      
       # TODO: Do a nice api, 'cause you can
       AMQP.start(server_opts) do |s|
         if @announce_presence
-          q = MQ.queue("presence")
-          q.publish("Alive\t#{@host}")
+          q = MQ.queue(Troph::QUEUES[:presence])
+          q.publish("Alive\t#{host}")
         end
         queues.each {|q| q.apply(s) }
         instance_eval &server_block if server_block
@@ -54,8 +51,9 @@ module Troph
       }
     end
     
+    
     def server_opts
-      {:host => '127.0.0.1'}
+      {:host => host}
     end
     
     # If we want to announce our presence to the presence queue when
@@ -63,6 +61,10 @@ module Troph
     def announce_presence(host="127.0.0.1")
       @announce_presence = true
       @host = host
+    end
+    
+    def host
+      @host ||= "127.0.0.1"
     end
     
     def queue(t, o={}, &block)

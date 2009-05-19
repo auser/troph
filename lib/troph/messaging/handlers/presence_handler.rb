@@ -1,9 +1,15 @@
 module Troph
   class PresenceHandler < BaseHandler
-    queue_name "presence"
+    queue_name Troph::QUEUES[:presence]
     
     def handle_message msg
-      puts "Received presence message: #{msg}"
+      case msg
+      when Troph::MESSAGES[:heartbeat]
+        # Do stuff here
+        puts "Still responding. Send a ping back"        
+      else
+        puts "Received presence message: #{msg}"
+      end      
     end
     
   end

@@ -20,7 +20,9 @@ EOS
     
     Troph::Server.new "troph" do
       
-      add_message_handler Troph::PresenceHandler
+      %w(Presence Join).each do |t|
+        eval "add_message_handler Troph::#{t}Handler"
+      end
       
       add_runtime_caller Troph::PeriodicChecker, 10
       

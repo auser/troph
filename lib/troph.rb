@@ -5,13 +5,13 @@ require 'amqp'
 require 'mq'
 require 'socket'
 
+require "p2p/types"
+require "p2p/node_store"
+
 require "messaging/queue"
 require "messaging/server"
 require "messaging/handler"
 require "messaging/caller"
-
-require "p2p/types"
-require "p2p/node_store"
 
 module Troph
   class Base

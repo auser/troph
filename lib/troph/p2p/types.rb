@@ -1,7 +1,12 @@
-module Troph
-  module Types
-    
-    JOIN_MSG = "join"
-    
-  end
+module Troph    
+  MESSAGES = {
+    :join => "join",
+    :heartbeat => "alive?"
+  }
+  
+  QUEUES = {
+    :presence => "presence",
+    :heartbeat => "ping",
+    :nodes => "nodes"
+  }
 end
