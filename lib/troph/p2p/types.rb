@@ -1,7 +1,7 @@
 module Troph
   module Types
     
-    JOIN_MSG = 1
+    JOIN_MSG = "join"
     
   end
 end

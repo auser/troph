@@ -1,36 +1,68 @@
 module Troph
   class Server
-    attr_reader :topic, :presence_block
+    attr_reader :topic, 
+                :host, 
+                :server_block, 
+                :runtime_blocks,
+                :listeners
+    
     attr_accessor :queues
     
     def initialize(t=nil, &block)
       @topic = t
+      @runtime_blocks = []
       @queues = []
-      instance_eval &block
-      $server = self
+      @announce_presence = false
+      instance_eval &block if block
+      $server = self      
     end
         
-    def run
-      
+    def run      
       Signal.trap('INT') { AMQP.stop }
       Signal.trap('TERM'){ AMQP.stop }
       
-      AMQP.start(server_opts) do |server|
-        MQ.topic(topic) if topic
-        
-        if presence_block
-          queue("presence", :key => "presence", &presence_block)
+      # TODO: Do a nice api, 'cause you can
+      AMQP.start(server_opts) do |s|
+        if @announce_presence
+          q = MQ.queue("presence")
+          q.publish("Alive\t#{@host}")
         end
-        queues.each {|q| q.apply(server) }
+        queues.each {|q| q.apply(s) }
+        instance_eval &server_block if server_block
+        
+        runtime_blocks.each {|blk| instance_eval &blk }
       end
+    end
+    
+    def at_run &block
+      @server_block = block
+    end
+    
+    private
+    
+    def add_message_handler(klass)
+      queue(klass.queue_name) do |msg|
+        klass.send :new, msg
+      end
+    end
+    
+    def add_runtime_caller(klass, seconds=1)
+      runtime_blocks << proc {
+        EM.add_periodic_timer(seconds) do
+          klass.send :new
+        end
+      }
     end
     
     def server_opts
       {:host => '127.0.0.1'}
     end
     
-    def at_presence(&block)
-      @presence_block ||= block
+    # If we want to announce our presence to the presence queue when
+    # we start, provide the host
+    def announce_presence(host="127.0.0.1")
+      @announce_presence = true
+      @host = host
     end
     
     def queue(t, o={}, &block)
@@ -40,7 +72,7 @@ module Troph
     end
     
     at_exit do
-      if $! != 0
+      if $! || $server.nil?
         exit
       end
       puts "Running server..."

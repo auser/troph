@@ -7,6 +7,8 @@ require 'socket'
 
 require "messaging/queue"
 require "messaging/server"
+require "messaging/handler"
+require "messaging/caller"
 
 require "p2p/types"
 require "p2p/node_store"

@@ -13,12 +13,20 @@ Usage: #{$0} #{all_options_string} COMMAND [ARGS]
 See 'troph help COMMAND' for more information on a specific command.
 EOS
     
+  opt :host, "Host ip of the server to broadcast", :default => "127.0.0.1"
+  
   run do |command|
-    puts "Starting a server..."
+    puts "Starting a server at #{command[:host]}"
     
-    server do
+    Troph::Server.new "troph" do
       
-    end
+      add_message_handler Troph::PresenceHandler
+      
+      add_runtime_caller Troph::PeriodicChecker, 10
+      
+      announce_presence command[:host]
+      
+    end.run
     
   end
 end

@@ -1,17 +1,21 @@
 require "#{::File.dirname(__FILE__)}/lib/troph"
-require "mq"
 
 class TrophApi < Troph::Base
     
   server do
-        
+    
     queue "awesome" do |msg|
-      puts msg
+      puts "payload: [#{msg}]"
     end
     
-    # q = queue "awesome1"
-    # q.publish("hello 1")
-        
+    at_run do
+      q = MQ.queue('awesome')
+      4.times {|i| EM.add_timer(0.5) {q.publish("Totally rad#{i}")} }
+      EM.add_timer(1) do
+        q.publish("random number #{rand(1000)}")
+      end
+    end
+    
   end
   
 end
