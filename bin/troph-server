@@ -14,21 +14,17 @@ See 'troph help COMMAND' for more information on a specific command.
 EOS
     
   opt :host, "Host ip of the server to broadcast", :default => "127.0.0.1"
+  opt :file, "Server config file", :type => String, :default => "../API"
   
   run do |command|
     puts "Starting a server at #{command[:host]}"
+    server = if file = ::File.expand_path(command[:file])
+      raise StandardError.new("Cannot find file: #{file}") unless ::File.file?(file)
+      data = open(file).read
+      eval data
+    end
     
-    Troph::Server.new "troph" do
-      
-      %w(Presence Join).each do |t|
-        eval "add_message_handler Troph::#{t}Handler"
-      end
-      
-      add_runtime_caller Troph::PeriodicChecker, 10
-      
-      announce_presence command[:host]
-      
-    end.run
+    server.run
     
   end
 end

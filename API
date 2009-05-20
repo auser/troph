@@ -1,21 +1,11 @@
-require "#{::File.dirname(__FILE__)}/lib/troph"
-
 class TrophApi < Troph::Base
     
-  server do
-    
-    queue "awesome" do |msg|
-      puts "payload: [#{msg}]"
+  server "troph" do
+    %w(Presence Join).each do |t|
+      eval "add_message_handler Troph::#{t}Handler"
     end
-    
-    at_run do
-      q = MQ.queue('awesome')
-      4.times {|i| EM.add_timer(0.5) {q.publish("Totally rad#{i}")} }
-      EM.add_timer(1) do
-        q.publish("random number #{rand(1000)}")
-      end
-    end
-    
+    add_runtime_caller Troph::PeriodicChecker, 1
+    announce_presence host
   end
   
 end
