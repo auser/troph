@@ -2,15 +2,20 @@ require "json"
 class TrophApi < Troph::Base
     
   server "troph" do
-    %w(Presence Join).each do |t|
-      eval "add_message_handler Troph::#{t}Handler"
-    end
-    add_runtime_caller Troph::PeriodicChecker, 1
-    announce_presence host
     
-    at_run do
-      # q = MQ.queue( Troph::QUEUES[:presence] )
-      # q.publish(Troph.prepare_message(:presence, :name => "hi"))
+    # Add a periodic caller to update status
+    add_runtime_caller Troph::PeriodicChecker, 5
+    
+    # Add handler to watch presence and join events
+    add_message_handler Troph::PresenceHandler
+    add_message_handler Troph::JoinHandler
+    
+    # Use troph's built-in host monitoring
+    announce_presence
+    
+    get_nodes_method "%x{server-list-active internal_ip}.chomp.split('\t')"
+    get_nodes_method do
+      ["10.45.11.45"]
     end
   end
   

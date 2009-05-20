@@ -2,7 +2,8 @@ module Troph
   class PeriodicChecker < BaseCaller
     
     def handle_call
-      Troph.send_to_queue(:presence, :heartbeat, {:host => "host"})
+      # DO STUFF IN HERE
+      Troph.send_to_queue("localhost", :presence, :heartbeat, {:host => "#{server.host}"})
     end
     
   end

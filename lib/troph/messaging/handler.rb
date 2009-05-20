@@ -1,8 +1,10 @@
 module Troph
   class BaseHandler
+    attr_reader :server
     
-    def initialize(msg, &block)
+    def initialize(msg, server, &block)
       ty = Troph.message_type(msg)
+      @server = server
       handle_message(ty, msg)
     end
     

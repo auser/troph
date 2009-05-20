@@ -9,7 +9,6 @@ require 'socket'
 require "core/hash"
 
 require "p2p/types"
-require "p2p/node_store"
 
 require "messaging/coder"
 require "messaging/queue"

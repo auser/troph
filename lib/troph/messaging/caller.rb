@@ -1,7 +1,9 @@
 module Troph
   class BaseCaller
+    attr_reader :server
     
-    def initialize
+    def initialize(server)
+      @server = server
       handle_call
     end
     

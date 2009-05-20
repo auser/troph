@@ -1,9 +1,9 @@
 module Troph    
   MESSAGES = {
-    :join         => {:message_type => "join"},
-    :heartbeat    => {:message_type => "heartbeat"},
-    :presence     => {:message_type => "presence"},
-    :nominations  => {:message_type => "nominations"}
+    :join         => "join",
+    :heartbeat    => "heartbeat",
+    :presence     => "presence",
+    :nominations  => "nominations"
   }
   
   QUEUES = {

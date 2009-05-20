@@ -1,11 +1,11 @@
 module Troph
   class Server
     attr_reader :topic, 
-                :host, 
                 :server_block, 
                 :runtime_blocks,
                 :listeners
     
+    attr_writer :host
     attr_accessor :queues
     
     def initialize(t=nil, &block)
@@ -21,8 +21,7 @@ module Troph
       # TODO: Do a nice api, 'cause you can
       AMQP.start(server_opts) do |s|
         if @announce_presence
-          q = Troph.get_queue(:presence)
-          q.publish(Troph.prepare_message(:prepare_message, {:here => "#{host}"}))
+          Troph.send_to_queue(host, :presence, :heartbeat, {:host => "#{host}"})
         end
         queues.each {|q| q.apply(s) }
         instance_eval &server_block if server_block
@@ -35,36 +34,55 @@ module Troph
       @server_block = block
     end
     
+    # If we want to announce our presence to the presence queue when
+    # we start, provide the host
+    def announce_presence
+      @announce_presence = true
+    end
+    
+    def host
+      @host ||= "127.0.0.1"
+    end
+    
+    def get_nodes_method(n=nil, &block)
+      if block
+        @get_nodes_method = block
+      else
+        if n.nil?
+          @get_nodes_method
+        else
+          @get_nodes_method ||= n
+        end
+      end
+    end
+    
+    def nodes
+      if @get_nodes_method
+        case @get_nodes_method
+        when Proc
+          @get_nodes_method.call
+        else
+          eval "#{@get_nodes_method}"
+        end        
+      else
+        []
+      end
+    end
+    
     private
     
-    def add_message_handler(klass)
-      queue(klass.queue_name) do |msg|
-        klass.send :new, Troph.receive_message(msg).symbolize_keys!
+    def add_message_handler(klass, &block)
+      queue(klass.queue_name) do |headers, msg|
+        klass.send :new, Troph.receive_message(msg).merge(:headers => headers).symbolize_keys!, self, &block
       end
     end
     
     def add_runtime_caller(klass, seconds=1)
       runtime_blocks << proc {
         EM.add_periodic_timer(seconds) do
-          klass.send :new
+          klass.send :new, self
         end
       }
-    end
-    
-    
-    def server_opts
-      {:host => host}
-    end
-    
-    # If we want to announce our presence to the presence queue when
-    # we start, provide the host
-    def announce_presence(host="127.0.0.1")
-      @announce_presence = true
-      @host = host
-    end
-    
-    def host
-      @host ||= "127.0.0.1"
     end
     
     def queue(t, o={}, &block)
@@ -73,12 +91,8 @@ module Troph
       end      
     end
     
-    at_exit do
-      if $! || $server.nil?
-        exit
-      end
-      puts "Running server..."
-      $server.run
+    def server_opts
+      {:host => host}
     end
         
   end

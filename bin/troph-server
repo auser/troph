@@ -22,6 +22,8 @@ EOS
       raise StandardError.new("Cannot find file: #{file}") unless ::File.file?(file)
       data = open(file).read
       server = eval data
+      
+      server.host = command[:host] if command[:host]
       server.run
     else
       raise StandardError.new("You must pass a file with the -f flag")

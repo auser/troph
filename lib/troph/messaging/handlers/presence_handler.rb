@@ -3,13 +3,17 @@ module Troph
     
     queue_name Troph::QUEUES[:presence]
     
-    def handle_message(type, msg)
-      case type
+    def handle_message(ty, msg)
+      case ty.to_sym
       when :heartbeat
         # Do stuff here
-        puts "Still responding. Send a ping back"
+        server.nodes.each do |ip|
+          puts "Sending to #{ip}"
+          Troph.send_to_queue(ip, :presence, :heartbeat, {:host => "#{server.host}"})
+        end
+        
       else
-        puts "Received presence message: #{msg.inspect}"
+        puts "Received presence message: #{msg.inspect} (#{ty})"
       end
     end
     
