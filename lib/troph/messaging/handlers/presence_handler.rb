@@ -7,7 +7,7 @@ module Troph
       case msg
       when Troph::MESSAGES[:heartbeat]
         # Do stuff here
-        puts "Still responding. Send a ping back"        
+        puts "Still responding. Send a ping back"
       else
         puts "Received presence message: #{msg}"
       end

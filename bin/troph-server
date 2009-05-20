@@ -18,13 +18,14 @@ EOS
   
   run do |command|
     puts "Starting a server at #{command[:host]}"
-    server = if file = ::File.expand_path(command[:file])
+    if file = ::File.expand_path(command[:file])
       raise StandardError.new("Cannot find file: #{file}") unless ::File.file?(file)
       data = open(file).read
-      eval data
+      server = eval data
+      server.run
+    else
+      raise StandardError.new("You must pass a file with the -f flag")
     end
-    
-    server.run
-    
+        
   end
 end

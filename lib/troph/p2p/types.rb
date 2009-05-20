@@ -1,12 +1,13 @@
 module Troph    
   MESSAGES = {
-    :join => "join",
-    :heartbeat => "alive?"
+    :join         => "m1",
+    :heartbeat    => "m2",
+    :nominations  => "m3"
   }
   
   QUEUES = {
-    :presence => "presence",
-    :heartbeat => "ping",
-    :nodes => "nodes"
+    :presence     => "q1",
+    :heartbeat    => "q2",
+    :nodes        => "q3"
   }
 end
