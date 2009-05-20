@@ -4,7 +4,7 @@ require "troph"
 require 'git-style-binary/command'
 
 GitStyleBinary.command do  
-  version "Troph Server"
+  version "Troph Server 0.0.1"
   banner <<-EOS
 Usage: #{$0} #{all_options_string} COMMAND [ARGS]
 
@@ -14,7 +14,7 @@ See 'troph help COMMAND' for more information on a specific command.
 EOS
     
   opt :host, "Host ip of the server to broadcast", :default => "127.0.0.1"
-  opt :file, "Server config file", :type => String, :default => "../API"
+  opt :file, "Server config file", :type => String, :default => "API"
   
   run do |command|
     puts "Starting a server at #{command[:host]}"

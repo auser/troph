@@ -2,10 +2,11 @@ module Troph
   class BaseHandler
     
     def initialize(msg, &block)
-      handle_message(msg)
+      ty = Troph.message_type(msg)
+      handle_message(ty, msg)
     end
     
-    def handle_message(msg)
+    def handle_message(type, msg)
       raise Exception.new("This message handler doesn't implement handle_message yet")
     end
     

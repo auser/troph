@@ -1,9 +1,9 @@
 module Troph
   class PeriodicChecker < BaseCaller
+    
     def handle_call
-      
-      MQ.queue(Troph::QUEUES[:presence]).publish(Troph::MESSAGES[:heartbeat])
-      
+      Troph.send_to_queue(:presence, :heartbeat, {:host => "host"})
     end
+    
   end
 end

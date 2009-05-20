@@ -2,12 +2,16 @@ $:.unshift(File.dirname(__FILE__) + "/troph")
 require 'rubygems'
 require 'eventmachine'
 require 'amqp'
+require "json"
 require 'mq'
 require 'socket'
+
+require "core/hash"
 
 require "p2p/types"
 require "p2p/node_store"
 
+require "messaging/coder"
 require "messaging/queue"
 require "messaging/server"
 require "messaging/handler"

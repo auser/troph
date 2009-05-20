@@ -3,13 +3,13 @@ $:.unshift(File.dirname(__FILE__) + "/../lib")
 require "troph"
 require 'git-style-binary/command'
 
-GitStyleBinary.primary do  
+GitStyleBinary.primary do    
   version "Troph"  
   banner <<-EOS
 Usage: #{$0} #{all_options_string} COMMAND [ARGS]
 
 The troph subcommands commands are:
-  \#{GitStyleBinary.pretty_known_subcommands(:short).join("  ")}
+  \#{GitStyleBinary.pretty_known_subcommands.join("  ")}
 
 See 'troph help COMMAND' for more information on a specific command.
 EOS

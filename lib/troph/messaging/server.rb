@@ -21,8 +21,8 @@ module Troph
       # TODO: Do a nice api, 'cause you can
       AMQP.start(server_opts) do |s|
         if @announce_presence
-          q = MQ.queue(Troph::QUEUES[:presence])
-          q.publish("Alive\t#{host}")
+          q = Troph.get_queue(:presence)
+          q.publish(Troph.prepare_message(:prepare_message, {:here => "#{host}"}))
         end
         queues.each {|q| q.apply(s) }
         instance_eval &server_block if server_block
@@ -39,7 +39,7 @@ module Troph
     
     def add_message_handler(klass)
       queue(klass.queue_name) do |msg|
-        klass.send :new, msg
+        klass.send :new, Troph.receive_message(msg).symbolize_keys!
       end
     end
     

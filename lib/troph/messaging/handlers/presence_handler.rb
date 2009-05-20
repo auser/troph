@@ -3,13 +3,13 @@ module Troph
     
     queue_name Troph::QUEUES[:presence]
     
-    def handle_message msg
-      case msg
-      when Troph::MESSAGES[:heartbeat]
+    def handle_message(type, msg)
+      case type
+      when :heartbeat
         # Do stuff here
         puts "Still responding. Send a ping back"
       else
-        puts "Received presence message: #{msg}"
+        puts "Received presence message: #{msg.inspect}"
       end
     end
     

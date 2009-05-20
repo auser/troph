@@ -1,3 +1,4 @@
+require "json"
 class TrophApi < Troph::Base
     
   server "troph" do
@@ -6,6 +7,11 @@ class TrophApi < Troph::Base
     end
     add_runtime_caller Troph::PeriodicChecker, 1
     announce_presence host
+    
+    at_run do
+      # q = MQ.queue( Troph::QUEUES[:presence] )
+      # q.publish(Troph.prepare_message(:presence, :name => "hi"))
+    end
   end
   
 end
