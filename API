@@ -1,10 +1,12 @@
 require "json"
+require "/Users/alerner/.poolparty/clouds.rb"
+
 class TrophApi < Troph::Base
     
   server "troph" do
     
     # Add a periodic caller to update status
-    add_runtime_caller Troph::PeriodicChecker, 5
+    add_runtime_caller Troph::PeriodicChecker, 2
     
     # Add handler to watch presence and join events
     add_message_handler Troph::PresenceHandler
@@ -13,10 +15,9 @@ class TrophApi < Troph::Base
     # Use troph's built-in host monitoring
     announce_presence
     
-    get_nodes_method "%x{server-list-active internal_ip}.chomp.split('\t')"
-    get_nodes_method do
-      ["10.45.11.45"]
-    end
+    store :cloud, clouds[:pp2]
+    
+    # get_nodes_method "%x{server-list-active internal_ip}.chomp.split('\t')"
   end
   
 end

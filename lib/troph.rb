@@ -8,8 +8,7 @@ require 'socket'
 
 require "core/hash"
 
-require "p2p/types"
-
+require "messaging/types"
 require "messaging/coder"
 require "messaging/queue"
 require "messaging/server"

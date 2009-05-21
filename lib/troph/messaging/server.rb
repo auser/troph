@@ -14,7 +14,6 @@ module Troph
       @queues = []
       @announce_presence = false
       instance_eval &block if block
-      $server = self      
     end
         
     def run      
@@ -57,6 +56,8 @@ module Troph
     end
     
     def nodes
+      # if respond_to?(:stored?) && stored?(:nodes)
+      #   fetch(:nodes)
       if @get_nodes_method
         case @get_nodes_method
         when Proc
@@ -67,6 +68,19 @@ module Troph
       else
         []
       end
+    end
+    
+    # Storage!
+    def store(k,obj)
+      runtime_blocks << proc{
+        __store[k] = obj
+        MQ.new.rpc("storage", __store)
+        puts "Stored!!!---"
+      }
+    end
+    
+    def fetch(k)
+      __store[k]
     end
     
     private
@@ -94,6 +108,10 @@ module Troph
     def server_opts
       {:host => host}
     end
-        
+    
+    def __store
+      @__store ||= {}
+    end
+    
   end
 end

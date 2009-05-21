@@ -7,9 +7,15 @@ module Troph
       case ty.to_sym
       when :heartbeat
         # Do stuff here
+        puts "got heartbeat: #{server.fetch(:cloud).name}"
+        
         server.nodes.each do |ip|
           puts "Sending to #{ip}"
-          Troph.send_to_queue(ip, :presence, :heartbeat, {:host => "#{server.host}"})
+          begin
+            Troph.send_to_queue(ip, :presence, :heartbeat, {:host => "#{server.host}"})
+          rescue NoConnectionError => e
+            puts "Remote #{ip} from responding nodes list"
+          end          
         end
         
       else

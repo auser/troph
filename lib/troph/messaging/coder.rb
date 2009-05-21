@@ -25,8 +25,23 @@ module Troph
     MQ::Queue.new(channel, queue_name)    
   end
   
-  def self.connection_to(host)
-    AMQP.connect(:host => host, :logging => false)
+  def self.connection_to(host, retry_times=3)
+    count = 0
+    while true do
+      begin        
+        return AMQP.connect(:host => host, :logging => false)
+      rescue
+        puts "Error connecting to #{host}... retrying #{count} more times"
+        count += 1
+        raise NoConnectionError.new(host) if count >= retry_times
+      end
+    end    
   end
   
+end
+
+class NoConnectionError < StandardError
+  def initialize(hst)
+    "Could not connect to #{hst}"
+  end
 end
