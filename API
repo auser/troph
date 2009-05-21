@@ -12,9 +12,6 @@ class TrophApi < Troph::Base
     add_message_handler Troph::PresenceHandler
     add_message_handler Troph::JoinHandler
     
-    # Use troph's built-in host monitoring
-    announce_presence
-    
     store :cloud, clouds[:pp2]
     
     # get_nodes_method "%x{server-list-active internal_ip}.chomp.split('\t')"
