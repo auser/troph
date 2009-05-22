@@ -28,7 +28,7 @@ module Troph
         instance_eval &server_block if server_block
         
         runtime_blocks.each {|blk| instance_eval &blk }        
-      end      
+      end
     end
     
     def at_run &block
@@ -77,6 +77,7 @@ module Troph
       runtime_blocks << proc{
         __store[k] = obj
         MQ.new.rpc("storage", __store)
+        log "Stored"
       }
     end
     
