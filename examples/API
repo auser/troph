@@ -1,3 +1,4 @@
+# troph start -t -- server -f examples/API 
 require "json"
 # require "/Users/alerner/.poolparty/clouds.rb"
 

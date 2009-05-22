@@ -33,3 +33,8 @@ I, [2009-05-22T00:05:58.815660 #2980]  INFO -- : Setting up trap for USR2
 I, [2009-05-22T00:05:58.815835 #2980]  INFO -- : DaemonKit up and running in development mode
 I, [2009-05-22T00:05:58.815960 #2980]  INFO -- : Setting up trap for INT
 I, [2009-05-22T00:05:58.816100 #2980]  INFO -- : Setting up trap for TERM
+I, [2009-05-22T00:11:02.557970 #3217]  INFO -- : Setting up trap for USR1
+I, [2009-05-22T00:11:02.558101 #3217]  INFO -- : Setting up trap for USR2
+I, [2009-05-22T00:11:02.558180 #3217]  INFO -- : DaemonKit up and running in development mode
+I, [2009-05-22T00:11:02.558235 #3217]  INFO -- : Setting up trap for INT
+I, [2009-05-22T00:11:02.558300 #3217]  INFO -- : Setting up trap for TERM
