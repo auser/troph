@@ -1,0 +1,11 @@
+= troph
+
+  More to come... 
+
+== Naming
+
+  Troph comes from the latin word for communication between bees: Trophallaxis.
+
+== Copyright
+
+Copyright (c) 2009 Ari Lerner. See LICENSE for details.

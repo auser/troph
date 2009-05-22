@@ -1,0 +1,34 @@
+#!/usr/bin/env ruby
+$:.unshift(File.dirname(__FILE__) + "/../lib")
+require "troph"
+require 'git-style-binary/command'
+
+GitStyleBinary.command do  
+  version "Troph Server 0.0.1"
+  banner <<-EOS
+Usage: #{$0} #{all_options_string} COMMAND [ARGS]
+
+  Start a troph serve
+
+See 'troph help COMMAND' for more information on a specific command.
+EOS
+    
+  opt :host, "Host ip of the server to broadcast", :default => "127.0.0.1"
+  opt :file, "Server config file", :type => String
+  
+  run do |command|    
+    if command[:file]
+      file = ::File.expand_path($cwd/command[:file])
+      raise StandardError.new("Cannot find file: #{file}") unless ::File.file?(file)
+      data = open(file).read
+      server = eval data
+      
+      server.host = command[:host] if command[:host]
+      puts "Starting a server at #{command[:host]}"
+      server.run
+    else
+      raise StandardError.new("You must pass a file with the -f flag")
+    end
+        
+  end
+end
