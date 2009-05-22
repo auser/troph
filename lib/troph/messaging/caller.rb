@@ -9,18 +9,7 @@ module Troph
     
     def handle_call(msg)
       raise Exception.new("This runtime caller doesn't implement handle_call yet")
-    end
-    
-    class << self
-      def queue_name(n=nil)
-        if n
-          @queue_name = n
-        else
-          @queue_name
-        end
-      end
-    end
-    
+    end    
     
   end
 end

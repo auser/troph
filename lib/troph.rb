@@ -7,12 +7,14 @@ require "core/string"
 end
 
 module Troph
-  class Base
-    def self.server(name=nil,&block)
-      Server.new name, &block
-    end
-  end
   def log(msg)
     DaemonKit.logger.debug msg
+  end
+  def self.queue_name(n=nil)
+    if n
+      @queue_name = n
+    else
+      @queue_name
+    end
   end
 end
