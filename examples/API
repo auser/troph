@@ -4,7 +4,7 @@ require "json"
 
 class TrophApi < Troph::Base
     
-  server "troph" do
+  config "troph" do
     
     # Add a periodic caller to update status
     add_runtime_caller Troph::PeriodicChecker, 2
