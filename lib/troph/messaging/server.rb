@@ -24,7 +24,7 @@ module Troph
         if @announce_presence
           Troph.send_to_queue(host, :presence, :heartbeat, {:host => "#{host}"})
         end
-        queues.each {|q| q.apply(s) }
+        queues.each {|q| q.apply(self) }
         instance_eval &server_block if server_block
         
         runtime_blocks.each {|blk| instance_eval &blk }        
@@ -66,7 +66,7 @@ module Troph
           @get_nodes_method.call
         else
           eval "#{@get_nodes_method}"
-        end        
+        end
       else
         []
       end

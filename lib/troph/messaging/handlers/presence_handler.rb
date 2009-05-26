@@ -7,10 +7,10 @@ module Troph
       case ty.to_sym
       when :heartbeat
         # Do stuff here
-        puts "got heartbeat: #{server.fetch(:cloud).name}"
+        log "got heartbeat: #{server.fetch(:cloud).name}"
         
         server.nodes.each do |ip|
-          puts "Sending to #{ip}"
+          log "Sending to #{ip}"
           begin
             Troph.send_to_queue(ip, :presence, :heartbeat, {:host => "#{server.host}"})
           rescue NoConnectionError => e
@@ -19,7 +19,7 @@ module Troph
         end
         
       else
-        puts "Received presence message: #{msg.inspect} (#{ty})"
+        log "Received unhandled presence message: #{msg.inspect} (#{ty})"
       end
     end
     

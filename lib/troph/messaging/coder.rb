@@ -1,4 +1,3 @@
-
 module Troph
     
   def self.prepare_message(type, o={})
