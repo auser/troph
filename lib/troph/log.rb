@@ -1,5 +1,3 @@
-require "logger"
-
 module Troph
   class Log
     LOG_LEVELS = [:debug, :info, :warn, :error, :fatal]
