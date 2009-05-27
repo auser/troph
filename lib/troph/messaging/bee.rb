@@ -4,16 +4,13 @@
   Usage:
     class Presence < Troph::Bee
       
+      run_after 30 do
+        # Do this after seconds
+      end
       # When a bee gets handed a payload, this method, on_data
       # is called for the bee
       def on_data(payload)
         # Do stuff with the payload
-      end
-      
-      # The periodic_run method is called every seconds_to_wait
-      # seconds
-      def periodic_run(seconds_to_wait)
-        # Do this after seconds
       end
 
     end
@@ -29,12 +26,16 @@ module Troph
       raise Exception.new("#{self.class} does not accept on_data(payload)")
     end
     
-    def periodic_run(seconds_to_wait=60)
-      raise Exception.new("#{self.class} does not accept periodic_run(seconds_to_wait)")
+    def self.run_after(seconds_to_wait=60, &block)
+      run_after_blocks << [seconds_to_wait, block]
     end
     
-    def self.queue_name
-      @queue_name ||= name.to_s.xcamelcase
+    def self.run_after_blocks
+      @run_after_blocks ||= []
+    end
+    
+    def queue_name
+      @queue_name ||= self.class.to_s.camelcase
     end
     
     def self.hive
@@ -43,6 +44,10 @@ module Troph
     
     def self.inherited(receiver)
       hive << receiver.queue_name unless hive.include?(receiver.queue_name)      
+    end
+    
+    def setup_periodic_blocks
+      self.class.run_after_blocks.each {|seconds, block| EM.add_periodic_timer(seconds, &block) }
     end
     
   end

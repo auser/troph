@@ -29,5 +29,8 @@ end
 
 at_exit do
   raise $! if $!
-  Troph::Hive.start unless Troph.testing?
+  unless Troph.testing?
+    Troph::Log.info "Starting troph..."
+    Troph::Hive.start
+  end
 end

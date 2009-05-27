@@ -11,15 +11,3 @@ DaemonKit::Application.running! do |config|
   # config.trap( 'TERM', Proc.new { puts 'Going down' } )
 end
 
-require 'git-style-binary/command'
-
-module GitStyleBinary
-  def self.binary_directory
-    "#{File.dirname(__FILE__)}/bin"
-  end
-end
-
-unless $! || GitStyleBinary.run?
-  command = GitStyleBinary::AutoRunner.run
-  exit 0
-end
