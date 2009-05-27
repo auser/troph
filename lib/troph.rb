@@ -2,27 +2,26 @@ $:.unshift(File.dirname(__FILE__) + "/troph")
 require "rubygems"
 require "json"
 
-require "core/hash"
-require "core/string"
+%w(object hash string).each do |lib|
+  require "core/#{lib}"
+end
 
-%w(types coder queue server handler caller).each do |lib|
+require "log"
+
+%w(bee packager hive).each do |lib|
   require "messaging/" + lib
 end
 
 module Troph
-  class Base
-    def self.server(name, &block)
-      Server.new(name, &block)
-    end
+  def self.run?
+    @run ||= true
   end
-  def log(msg)
-    DaemonKit.logger.debug msg
+  def self.run=(bool=true)
+    @run = bool
   end
-  def self.queue_name(n=nil)
-    if n
-      @queue_name = n
-    else
-      @queue_name
-    end
-  end
+end
+
+at_exit do
+  raise $! if $!
+  Troph::Hive.run if Troph.run?
 end
