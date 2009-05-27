@@ -1,6 +1,0 @@
-# Logfile created on Wed May 27 02:00:17 -0700 2009 by /
-I, [2009-05-27T02:00:17.335490 #11714]  INFO -- : Setting up trap for USR1
-I, [2009-05-27T02:00:17.335599 #11714]  INFO -- : Setting up trap for USR2
-I, [2009-05-27T02:00:17.335674 #11714]  INFO -- : DaemonKit up and running in development mode
-I, [2009-05-27T02:00:17.335735 #11714]  INFO -- : Setting up trap for INT
-I, [2009-05-27T02:00:17.335805 #11714]  INFO -- : Setting up trap for TERM
