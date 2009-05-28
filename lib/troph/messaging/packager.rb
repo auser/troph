@@ -1,5 +1,5 @@
 =begin rdoc
-  Package the packet
+  Package the honey (packets)
 =end
 module Troph
   class Packager    

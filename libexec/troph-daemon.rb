@@ -11,3 +11,4 @@ DaemonKit::Application.running! do |config|
   # config.trap( 'TERM', Proc.new { puts 'Going down' } )
 end
 
+Troph::Hive.start

@@ -43,11 +43,13 @@ module Troph
     end
     
     def self.inherited(receiver)
-      hive << receiver.queue_name unless hive.include?(receiver.queue_name)      
+      hive << receiver unless hive.include?(receiver)
     end
     
     def setup_periodic_blocks
-      self.class.run_after_blocks.each {|seconds, block| EM.add_periodic_timer(seconds, &block) }
+      self.class.run_after_blocks.each do |seconds, block| 
+        # EM.start {EM.add_periodic_timer(seconds, &block)}
+      end
     end
     
     def setup_listener(comm_instance)
