@@ -16,6 +16,7 @@ class LogTest < Test::Unit::TestCase
     
     should "output to a string if init'd with a string path" do      
       path = "#{File.dirname(__FILE__)}/../log"
+      FileUtils.mkdir path unless File.directory?(path)
       File.unlink "#{path}/bee.log" if File.file?("#{path}/bee.log")
       Troph::Log.init "bee", path
       Troph::Log.info "hello bees"
@@ -28,13 +29,13 @@ class LogTest < Test::Unit::TestCase
   private
   def redirect_stdout(&block)
     old_stdout = $stdout
-    out = StringIO.new
-    $stdout = out
+    str = StringIO.new
+    $stdout = str
     begin
        block.call
     ensure
        $stdout = old_stdout
     end
-    out.string
+    str.string
   end
 end
