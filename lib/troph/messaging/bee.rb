@@ -9,7 +9,7 @@
       end
       # When a bee gets handed a payload, this method, on_data
       # is called for the bee
-      def on_data(payload)
+      def on_data(payload, queue_instance)
         # Do stuff with the payload
       end
 
@@ -22,7 +22,7 @@
 module Troph
   class Bee
     
-    def on_data(payload)
+    def on_data(payload, queue_instance)
       raise Exception.new("#{self.class} does not accept on_data(payload)")
     end
     
@@ -48,6 +48,15 @@ module Troph
     
     def setup_periodic_blocks
       self.class.run_after_blocks.each {|seconds, block| EM.add_periodic_timer(seconds, &block) }
+    end
+    
+    def setup_listener(comm_instance)
+      queue = comm_instance.queue(queue_name)
+      exch = comm_instance.exchange(queue_name + "_exchange")
+      queue.bind(exch, :key => "troph_#{queue_name}")
+      queue.subscribe(:consumer_tag => queue_name) do |msg|
+        on_data(msg, comm_instance)
+      end
     end
     
   end

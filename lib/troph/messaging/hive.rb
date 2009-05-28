@@ -20,13 +20,7 @@ module Troph
     def self.setup_bees
       bees.each do |bee|
         bee.setup_periodic_blocks
-        c = Troph::Comm.instance
-        queue = c.queue(bee.queue_name)
-        exch = b.exchange(bee.queue_name + "_exchange")
-        queue.bind(exch, :key => "troph")
-        queue.subscribe(:consumer_tag => 'testtag1') do |msg|
-          bee.on_data(msg)
-        end
+        bee.setup_listener(Troph::Comm.instance)
       end
     end
     
