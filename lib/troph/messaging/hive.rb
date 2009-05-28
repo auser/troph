@@ -13,6 +13,10 @@ module Troph
     end
     
     # TODO: Add availability of the bees here
+    # Setup the bees in the hive
+    # 
+    # This sets up the periodic blocks from within the bees
+    # and binds and subscribes the bees
     def self.setup_bees
       bees.each do |bee|
         bee.setup_periodic_blocks
@@ -26,8 +30,8 @@ module Troph
       end
     end
     
-    def self.start
-      load_hive
+    def self.start(base_dir=Dir.pwd)
+      load_hive(base_dir)
       setup_bees
     end
     
