@@ -7,6 +7,6 @@ class AddressBook < Troph::Bee
   def on_data(payload)
     # Do stuff with the payload
     Troph::Log.info "Address book was hit, time to send it out to everyone I know with #{payload}"
-  end  
+  end
 
 end

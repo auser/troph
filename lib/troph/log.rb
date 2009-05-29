@@ -1,4 +1,20 @@
 module Troph
+  class Formatter < Logger::Formatter
+    @@show_time = true
+    
+    def self.show_time=(show=false)
+      @@show_time = show
+    end
+    
+    # Prints a log message as '[time] severity: message'
+    def call(severity, time, progname, msg)
+      if @@show_time
+        sprintf("[%s] %s: %s\n", time.rfc2822(), severity, msg)
+      else
+        sprintf("%s: %s\n", severity, msg)
+      end
+    end
+  end
   class Log
     LOG_LEVELS = [:debug, :info, :warn, :error, :fatal]
         
@@ -20,7 +36,10 @@ module Troph
       end
       
       def logger
-        @logger ||= Logger.new(pipe)
+        return @logger if @logger
+        @logger = Logger.new(pipe)
+        @logger.formatter = Formatter.new
+        @logger
       end
       
       def reset!

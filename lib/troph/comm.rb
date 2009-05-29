@@ -4,9 +4,11 @@ module Troph
   class Comm
     
     def self.send_to_queue(queue_name, msg, opts={})
-      if opts[:servers]
-        opts[:servers].each do |srv|
-          Troph::Log.info "Connect to #{srv} and send #{msg}"
+      if srvs = opts.delete(:servers)
+        srvs.each do |srv|
+          i = new.instance(:host => srv)
+          exch = i.exchange(queue_name)
+          exch.publish(msg, {:key => queue_name}.merge(opts))
         end
       else
         exch = instance.exchange(queue_name)
@@ -25,13 +27,17 @@ module Troph
       exch.publish(msg)
     end
         
-    def self.instance
-      @instance ||= new.instance
+    def self.instance(o={})
+      @instance ||= new.instance(o)
     end
     
-    def instance
-      Troph::BunnyComm.new.instance
+    def instance(o={})
+      Troph::BunnyComm.new.instance(o)
     end
+    
+    # def self.method_missing(m,*a,&block)
+    #   instance.send m,*a,&block
+    # end
         
   end
 end

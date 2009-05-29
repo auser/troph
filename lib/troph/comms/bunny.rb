@@ -17,8 +17,8 @@ module Troph
       exch.publish(msg)
     end
     
-    def instance
-      b = ::Bunny.new(:logging => true)
+    def instance(o={})
+      b = ::Bunny.new({:logging => true}.merge(o))
       b.start
       b
     end
