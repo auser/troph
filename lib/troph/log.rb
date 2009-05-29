@@ -8,6 +8,7 @@ module Troph
       def init(name="bee.log", path = false)
         @path = path
         @log_name = name
+        reset!
       end
       
       LOG_LEVELS.each do |level|

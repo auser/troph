@@ -26,7 +26,4 @@ module Troph
   def self.testing?
     @testing
   end
-  def self.user_data
-    # loaded user_data
-  end
 end

@@ -7,33 +7,26 @@ module Troph
     def self.load_hive(base_dir=$cwd)
       Dir["#{base_dir}/bees/*.rb"].each {|bee| require bee }
     end
-    
+        
     def self.bees
       @bees ||= Bee.hive
     end
     
-    # TODO: Add availability of the bees here
-    # Setup the bees in the hive
-    # 
-    # This sets up the periodic blocks from within the bees
-    # and binds and subscribes the bees
-    def self.setup_bees
-      bees.map {|b| b.new }.each do |bee|
-        bee.setup_listener(Troph::Comm.instance)
-      end
+    def self.queues
+      bees.map {|b| b.private? ? nil : b.queue_name }.compact
     end
     
     # Start this hive (server)
     # First load all the bees from the bees directory
     # and then set them up
     def self.start(base_dir=$cwd)
-      load_hive(base_dir)
-      setup_bees
-      EM.run do
-        puts "in EM.run"
-        p [:bees, bees, $cwd]
-        bees.each {|bee| bee.periodic_block.call }
+      load_hive(base_dir)      
+      bees.map {|b| b.new }.each do |bee|
+        Troph::Log.info "Adding #{bee.queue_name} bee"
+        bee.setup_periodic_block
+        fork {bee.setup_listener(Troph::Comm.instance)}
       end
+      Troph::Log.info "Started and running troph. pzzzzz"
     end
     
   end

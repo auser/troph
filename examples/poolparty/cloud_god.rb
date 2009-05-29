@@ -1,5 +1,7 @@
-begin
-  require "poolparty"
+require "rubygems"
+require "poolparty"
+
+begin  
   require "/etc/poolparty/clouds.rb"
 rescue Exception => e
   cloud :test_cloud do
@@ -11,6 +13,6 @@ class CloudGod
     @cloud ||= clouds[cloud_name.to_sym]
   end
   def self.cloud_name
-    @cloud_name ||= open("/etc/poolparty/cloudname").read rescue :test_cloud
+    @cloud_name ||= open("/etc/poolparty/cloudname").read rescue "test_cloud"
   end
 end

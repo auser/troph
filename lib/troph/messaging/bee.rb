@@ -9,7 +9,7 @@
       end
       # When a bee gets handed a payload, this method, on_data
       # is called for the bee
-      def on_data(payload, queue_instance)
+      def on_data(payload)
         # Do stuff with the payload
       end
 
@@ -26,8 +26,8 @@ module Troph
       raise Exception.new("#{self.class} does not accept on_data(payload)")
     end
     
-    def self.event_loop(&block)
-      run_after_blocks << block
+    def self.event_loop(time, &block)
+      run_after_blocks << [time, block]
     end
     
     def self.run_after_blocks
@@ -35,7 +35,19 @@ module Troph
     end
     
     def queue_name
-      @queue_name ||= self.class.to_s.camelcase
+      @queue_name ||= self.class.to_s.downcase
+    end
+    
+    def self.queue_name
+      self.to_s.downcase
+    end
+    
+    def self.private?
+      @private_bee
+    end
+    
+    def self.private_bee(n=false)
+      @private_bee = n
     end
     
     def self.hive
@@ -46,20 +58,23 @@ module Troph
       hive << receiver unless hive.include?(receiver)
     end
     
-    def periodic_block
-      Proc.new do
-        self.class.run_after_blocks.each {|s, b| EM.add_periodic_timer(s, &b)}
-      end
+    def setup_periodic_block
+      self.class.run_after_blocks.each {|s, b| Thread.new {EM.run {EM.add_periodic_timer(s, &b)}} }
     end
     
     def setup_listener(comm_instance)
       queue = comm_instance.queue(queue_name)
-      exch = comm_instance.exchange(queue_name + "_exchange")
-      queue.bind(exch, :key => "troph_#{queue_name}")
-      queue.subscribe(:consumer_tag => queue_name) do |msg|
-        comm_instance.ack
+      exch = comm_instance.exchange(queue_name)
+      queue.bind(exch, :key => "#{queue_name}")
+      queue.subscribe(:consumer_tag => "#{queue_name}_#{identity}") do |msg|
+        queue.ack
         on_data(msg)
       end
+    end
+    
+    # Idea taken so graciously from nanite
+    def identity
+      @identity ||= "%04x%04x%04x%04x%04x" % [rand(0x0010000),rand(0x0010000),rand(0x0010000),rand(0x1000000),rand(0x1000000)]
     end
     
   end
