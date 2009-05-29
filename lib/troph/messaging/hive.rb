@@ -19,7 +19,6 @@ module Troph
     # and binds and subscribes the bees
     def self.setup_bees
       bees.map {|b| b.new }.each do |bee|
-        bee.setup_periodic_blocks
         bee.setup_listener(Troph::Comm.instance)
       end
     end
@@ -30,6 +29,11 @@ module Troph
     def self.start(base_dir=$cwd)
       load_hive(base_dir)
       setup_bees
+      EM.run do
+        puts "in EM.run"
+        p [:bees, bees, $cwd]
+        bees.each {|bee| bee.periodic_block.call }
+      end
     end
     
   end

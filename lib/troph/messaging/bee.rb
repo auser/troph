@@ -22,12 +22,12 @@
 module Troph
   class Bee
     
-    def on_data(payload, queue_instance)
+    def on_data(payload)
       raise Exception.new("#{self.class} does not accept on_data(payload)")
     end
     
-    def self.run_after(seconds_to_wait=60, &block)
-      run_after_blocks << [seconds_to_wait, block]
+    def self.event_loop(&block)
+      run_after_blocks << block
     end
     
     def self.run_after_blocks
@@ -46,9 +46,9 @@ module Troph
       hive << receiver unless hive.include?(receiver)
     end
     
-    def setup_periodic_blocks
-      self.class.run_after_blocks.each do |seconds, block| 
-        # EM.start {EM.add_periodic_timer(seconds, &block)}
+    def periodic_block
+      Proc.new do
+        self.class.run_after_blocks.each {|s, b| EM.add_periodic_timer(s, &b)}
       end
     end
     
@@ -57,7 +57,8 @@ module Troph
       exch = comm_instance.exchange(queue_name + "_exchange")
       queue.bind(exch, :key => "troph_#{queue_name}")
       queue.subscribe(:consumer_tag => queue_name) do |msg|
-        on_data(msg, comm_instance)
+        comm_instance.ack
+        on_data(msg)
       end
     end
     

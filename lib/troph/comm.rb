@@ -8,7 +8,7 @@ module Troph
     end
     
     def instance
-      Troph::Bunny.instance
+      Troph::BunnyComm.new.instance
     end
     
   end

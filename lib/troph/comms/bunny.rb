@@ -1,8 +1,8 @@
 module Troph
-  class Bunny
+  class BunnyComm
     
     def instance
-      b = Bunny.new(:logging => true)
+      b = ::Bunny.new(:logging => true)
       b.start
       b
     end

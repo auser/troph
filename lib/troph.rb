@@ -10,7 +10,6 @@ require "eventmachine" # Only used for clock requirements
 end
 
 require "log"
-
 require "comm"
 
 %w(bee packager hive).each do |lib|
@@ -27,12 +26,7 @@ module Troph
   def self.testing?
     @testing
   end
-end
-
-at_exit do
-  raise $! if $!
-  unless Troph.testing?
-    Troph::Log.info "Starting troph..."
-    Troph::Hive.start
+  def self.user_data
+    # loaded user_data
   end
 end
