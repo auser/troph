@@ -6,13 +6,13 @@ module Troph
     def self.send_to_queue(queue_name, msg, opts={})
       if srvs = opts.delete(:servers)
         srvs.each do |srv|
-          i = new.instance(:host => srv)
+          i = instances[srv] ||= new.instance(:host => srv)
           exch = i.exchange(queue_name)
-          exch.publish(msg, {:key => queue_name}.merge(opts))
+          publish(exch, msg, {:key => queue_name}.merge(opts))
         end
       else
         exch = instance.exchange(queue_name)
-        exch.publish(msg, {:key => queue_name}.merge(opts))
+        publish(exch, msg, {:key => queue_name}.merge(opts))
       end
     end
         
@@ -24,7 +24,23 @@ module Troph
         instance.queue(qname).bind(exch)
       end
       # publish a message to the exchange
-      exch.publish(msg)
+      publish(exch, msg)
+    end
+    
+    # publish the message after encrypting it and packing it
+    def self.publish(exchange, msg, opts={})
+      exchange.publish(Honey.package(msg), opts)
+    end
+    
+    def self.setup_subscription(bee)
+      queue = instance.queue(bee.queue_name)
+      exch = instance.exchange(bee.queue_name)
+      queue.bind(exch, :key => "#{bee.queue_name}")
+      queue.subscribe(:consumer_tag => "#{bee.queue_name}_#{bee.identity}") do |data|
+        msg = Honey.unwrap(data)
+        bee.on_data(msg)
+        queue.ack
+      end
     end
         
     def self.instance(o={})
@@ -35,9 +51,9 @@ module Troph
       Troph::BunnyComm.new.instance(o)
     end
     
-    # def self.method_missing(m,*a,&block)
-    #   instance.send m,*a,&block
-    # end
-        
+    def instances
+      @instances ||= {}
+    end
+            
   end
 end

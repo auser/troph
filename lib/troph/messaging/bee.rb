@@ -21,6 +21,14 @@
 =end
 module Troph
   class Bee
+    attr_accessor :hive_proxy
+    
+    def initialize
+      after_create
+    end
+    
+    def after_create
+    end
     
     def on_data(payload)
       raise Exception.new("#{self.class} does not accept on_data(payload)")
@@ -59,22 +67,23 @@ module Troph
     end
     
     def setup_periodic_block
-      self.class.run_after_blocks.each {|s, b| Thread.new {EM.run {EM.add_periodic_timer(s, &b)}} }
+      self.class.run_after_blocks.each {|s, b| Thread.new {EM.run do
+          EM.add_periodic_timer(s, Proc.new {b.call(self)})
+        end
+      } }
     end
     
-    def setup_listener(comm_instance)
-      queue = comm_instance.queue(queue_name)
-      exch = comm_instance.exchange(queue_name)
-      queue.bind(exch, :key => "#{queue_name}")
-      queue.subscribe(:consumer_tag => "#{queue_name}_#{identity}") do |msg|
-        queue.ack
-        on_data(msg)
-      end
+    def setup_listener
+      Troph::Comm.setup_subscription(self)
     end
     
     # Idea taken so graciously from nanite
     def identity
       @identity ||= "%04x%04x%04x%04x%04x" % [rand(0x0001000),rand(0x0010000),rand(0x0000100),rand(0x1000000),rand(0x1000000)]
+    end
+    
+    def method_missing(m,*a,&block)
+      hive_proxy ? hive_proxy.send(m,*a,&block) : super
     end
     
   end

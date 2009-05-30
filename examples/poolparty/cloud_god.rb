@@ -1,12 +1,16 @@
-require "rubygems"
-require "poolparty"
-
-begin  
-  require "/etc/poolparty/clouds.rb"
-rescue Exception => e
-  cloud :test_cloud do
-  end
-end
+# require "rubygems"
+# begin
+#   require "/Users/alerner/Development/ruby/mine/poolparty/lib/poolparty"
+# rescue Exception => e
+#   require "poolparty"
+# end
+# 
+# begin  
+#   require "/etc/poolparty/clouds.rb"
+# rescue Exception => e
+#   cloud :test_cloud do
+#   end
+# end
 
 class CloudGod
   def self.cloud

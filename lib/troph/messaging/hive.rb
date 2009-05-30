@@ -22,9 +22,10 @@ module Troph
     def self.start(base_dir=$cwd)
       load_hive(base_dir)      
       bees.map {|b| b.new }.each do |bee|
+        bee.hive_proxy = self
         Troph::Log.info "Adding #{bee.queue_name} bee"
         bee.setup_periodic_block
-        fork {bee.setup_listener(Troph::Comm.instance)}
+        fork {bee.setup_listener}
       end
       Troph::Log.info "Started and running troph. pzzzzz"
     end
