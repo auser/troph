@@ -63,6 +63,7 @@ module Troph
     end
     
     def self.inherited(receiver)
+      puts "inherited: #{receiver}"
       hive << receiver unless hive.include?(receiver)
     end
     

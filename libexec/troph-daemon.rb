@@ -14,6 +14,13 @@ end
 
 Troph::Log.info "Loading custom hive"
 
+require 'optparse'
+OptionParser.new { |op|
+  op.on('-c config', '--config config')   { |c| @c = c }
+}.parse!(ARGV.dup)
+
+raise StandardError.new("You must supply a hive (config) file with -c config_file") unless @c
+
 require "#{File.dirname(__FILE__)}/../examples/poolparty/pool_party_hive.rb"
 
 Troph::Log.info "Loaded = #{Time.now-t}"
@@ -23,5 +30,5 @@ DaemonKit::AMQP.run do
   # amq.queue('test').subscribe do |msg|
   #   DaemonKit.logger.debug "Received message: #{msg.inspect}"
   # end
-  PoolPartyHive.start
+  PoolPartyHive.start(DAEMON_ROOT + "/" + File.dirname(@c))
 end
