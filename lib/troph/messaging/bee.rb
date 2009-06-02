@@ -21,10 +21,19 @@
 =end
 module Troph
   class Bee
-    attr_accessor :hive_proxy
+    include Comm
+    attr_reader :hive, :comm
     
-    def initialize
+    def initialize(hive=nil)
+      raise Exception.new("Not a valid hive passed for bee") unless hive && hive.is_a?(Hive)
+      @hive = hive
+      @comm = hive.comm
       after_create
+    end
+    
+    def init
+      setup_periodic_block
+      fork {setup_local_listener}
     end
     
     def after_create
@@ -42,40 +51,20 @@ module Troph
       @run_after_blocks ||= []
     end
     
-    def queue_name
-      @queue_name ||= self.class.to_s.downcase
-    end
+    # The name of the queue this bee listens on is 
+    # the class name of the queue
+    def queue_name;@queue_name ||= self.class.to_s.downcase;end    
+    def self.queue_name;self.to_s.downcase;end
     
-    def self.queue_name
-      self.to_s.downcase
-    end
-    
-    def self.private?
-      @private_bee
-    end
-    
-    def self.private_bee(n=false)
-      @private_bee = n
-    end
-    
-    def self.hive
-      @hive ||= []
-    end
-    
-    def self.inherited(receiver)
-      puts "inherited: #{receiver}"
-      hive << receiver unless hive.include?(receiver)
-    end
+    def self.private?;@private_bee == true;end    
+    def self.private_bee(n=false);@private_bee = n;end
     
     def setup_periodic_block
-      self.class.run_after_blocks.each {|s, b| Thread.new {EM.run do
-          EM.add_periodic_timer(s, Proc.new {b.call(self)})
-        end
-      } }
+      self.class.run_after_blocks.each {|s, b| Thread.new {EM.run {EM.add_periodic_timer(s, Proc.new {b.call(self)})}} }
     end
     
-    def setup_listener
-      Troph::Comm.setup_subscription(self)
+    def setup_local_listener
+      comm.setup_subscription(self)
     end
     
     # Idea taken so graciously from nanite
@@ -83,8 +72,13 @@ module Troph
       @identity ||= "%04x%04x%04x%04x%04x" % [rand(0x0001000),rand(0x0010000),rand(0x0000100),rand(0x1000000),rand(0x1000000)]
     end
     
-    def method_missing(m,*a,&block)
-      hive_proxy ? hive_proxy.send(m,*a,&block) : super
+    def self.hive
+      @hive ||= []
+    end
+    
+    def self.inherited(receiver)
+      sym = receiver.to_s.downcase.to_sym
+      hive << sym unless hive.include?(sym)
     end
     
   end

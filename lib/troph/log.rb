@@ -9,7 +9,7 @@ module Troph
     # Prints a log message as '[time] severity: message'
     def call(severity, time, progname, msg)
       if @@show_time
-        sprintf("[%s] %s: %s\n", time.rfc2822(), severity, msg)
+        sprintf("[%s] %s: %s\n", time.to_s, severity, msg)
       else
         sprintf("%s: %s\n", severity, msg)
       end

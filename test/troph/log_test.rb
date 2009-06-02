@@ -1,4 +1,4 @@
-require 'test_helper'
+require './../test_helper'
 
 class LogTest < Test::Unit::TestCase
   context "log" do
@@ -11,7 +11,7 @@ class LogTest < Test::Unit::TestCase
       o = redirect_stdout do
         Troph::Log.info "hi"
       end
-      assert_match /INFO -- : hi/, o
+      assert_match /INFO: hi/, o
     end
     
     should "output to a string if init'd with a string path" do      
@@ -20,7 +20,7 @@ class LogTest < Test::Unit::TestCase
       File.unlink "#{path}/bee.log" if File.file?("#{path}/bee.log")
       Troph::Log.init "bee", path
       Troph::Log.info "hello bees"
-      assert_match /INFO -- : hello bees/, open("#{path}/bee.log").read
+      assert_match /INFO: hello bees/, open("#{path}/bee.log").read
       File.unlink "#{path}/bee.log" if File.file?("#{path}/bee.log")
     end
     

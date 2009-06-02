@@ -1,4 +1,4 @@
-require 'test_helper'
+require './../test_helper'
 
 class TrophTest < Test::Unit::TestCase
   context "string" do
