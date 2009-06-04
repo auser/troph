@@ -65,19 +65,19 @@ module Troph
       queue.unsubscribe({:consumer_tag => consumer_tag(bee)})
     end
     
+    def instance(o={})
+      return @instance if @instance      
+      @instance = ::Bunny.new(o)
+      @instance.start
+      @instance
+    end
+    
     private
     
     def queue_and_exchange(bee)
       queue = instance.queue(bee.queue_name)
       exch = instance.exchange(bee.queue_name)
       [queue, exch]
-    end
-    
-    def instance(o={})
-      return @instance if @instance      
-      @instance = ::Bunny.new(o)
-      @instance.start
-      @instance
     end
     
     def consumer_tag(bee)

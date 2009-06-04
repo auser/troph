@@ -1,4 +1,4 @@
-require './../test_helper'
+require "#{File.dirname(__FILE__)}/../test_helper"
 Dir["#{::File.dirname(__FILE__)}/bees/*.rb"].each {|lib| require lib }
 
 class BeeTest < Test::Unit::TestCase

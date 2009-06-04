@@ -1,4 +1,4 @@
-require './../test_helper'
+require "#{File.dirname(__FILE__)}/../test_helper"
 
 class BunnyTest < Test::Unit::TestCase
   context "instance" do
