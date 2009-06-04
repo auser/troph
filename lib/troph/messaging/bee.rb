@@ -74,18 +74,22 @@ module Troph
          Signal.trap(:INT)  { shutdown }
          comm.setup_subscription(self)
        end
-       Process.detach(pid)      
+       
+       srand
+       Dir.chdir "/"
+       File.umask 0000
+       Process.detach(pid)
     end
     
     def shutdown
       Troph::Log.info "Stopping #{self}"
       teardown_subscription(self)
-      exit()
+      exit
     end
     
     # Idea taken so graciously from nanite
     def identity
-      @identity ||= "%04x%04x%04x%04x%04x" % [rand(0x0001000),rand(0x0010000),rand(0x0000100),rand(0x1000000),rand(0x1000000)]
+      @identity ||= UUID.generate
     end
     
     def self.hive

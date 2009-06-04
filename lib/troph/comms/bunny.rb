@@ -38,7 +38,10 @@ module Troph
     
     # publish the message after encrypting it and packing it
     def publish(exchange, msg, opts={})
-      exchange.publish(Honey.package(msg), opts)
+      package = Package.new(opts.delete(:package))      
+      package.payload = msg
+      
+      exchange.publish(package.dump, opts)
     end
     
     def setup_subscription(bee)
@@ -49,8 +52,8 @@ module Troph
       opts.merge!(:header => true) if bee.accepts_header?
       
       queue.subscribe(opts) do |data|
-        msg = Honey.unwrap(data)
-        bee.on_data(msg)
+        package = Package.from_data(data)
+        bee.on_data(package)
         queue.ack
       end
     end

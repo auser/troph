@@ -12,6 +12,13 @@ module Troph
       Dir["#{base_dir}/bees/*.rb"].each {|bee| require bee }
     end
     
+    def self.after_started(&block);@after_started_block = block if block;end
+    def self.after_started_block(&block);@after_started_block;end
+    
+    def after_started
+      self.class.after_started_block.call(self) if self.class.after_started_block
+    end
+    
     # Live bees... constantized symbols
     def hive
       self.class.bees.map do |bee|
@@ -34,6 +41,7 @@ module Troph
         hive.each {|bee| bee.init }
         Troph::Log.info "Started and running troph through #{self.class}"
       end
+      i.after_started
     end
     
     # Bees this hive responds to (locally)

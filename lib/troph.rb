@@ -12,7 +12,7 @@ end
 require "log"
 require "comm"
 
-%w(bee honey hive).each do |lib|
+%w(uuid bee honey hive package).each do |lib|
   require "messaging/" + lib
 end
 

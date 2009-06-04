@@ -19,9 +19,15 @@ class Presence < Troph::Bee
   
   # When a bee gets handed a payload, this method, on_data
   # is called for the bee
-  def on_data(payload)
+  def on_data(package)
     # Do stuff with the payload
-    Troph::Log.info "received presence message: #{payload}"
+    Troph::Log.info package.inspect
+    case package.action
+    when "a"
+      Troph::Log.info "Received add presence: #{package.payload}"
+    else
+      Troph::Log.info "received presence message: #{package.payload}"
+    end
   end
 
 end
