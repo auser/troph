@@ -8,7 +8,8 @@ class PoolPartyHive < Troph::Hive
   # bees :nominations
   
   def my_ip
-    "127.0.0.1"
+    require "macmap"
+    Macmap.map_iface_to_ip(%x{ifconfig -a})["en0"]
   end
   
 end

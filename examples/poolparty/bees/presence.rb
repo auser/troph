@@ -4,12 +4,7 @@ class Presence < Troph::Bee
   
   event_loop 5 do |bee|
     if (Time.now - 5) >= bee.last_presence_request_time
-      # Do this after 3 minutes
-      Troph::Comm.send_to_queue("presence", "p")
-                                
-      # Troph::Comm.send_to_queue("presence", 
-      #                           "p",
-      #                           :servers => CloudGod.cloud.nodes(:status => "running"))
+      bee.send_to_queue("presence", "#{bee.my_ip}")
       bee.last_presence_request_time = Time.now
     end
   end

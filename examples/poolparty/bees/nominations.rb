@@ -1,8 +1,8 @@
 class Nominations < Troph::Bee
   
-  event_loop 5 do
+  event_loop 30 do
     # Do this after 30 seconds
-    # Troph::Log.info "Nominations!"
+    Troph::Log.info "Nominations!"
   end
   
   # When a bee gets handed a payload, this method, on_data

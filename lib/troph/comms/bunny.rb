@@ -1,6 +1,6 @@
 module Troph
-  class Bunny
-        
+  class Bunny < Comm
+    
     def fanout(msg)
       # create a fanout exchange
       exch = instance.exchange("troph_fan", :type => :fanout)
@@ -42,14 +42,32 @@ module Troph
     end
     
     def setup_subscription(bee)
-      queue = instance.queue(bee.queue_name)
-      exch = instance.exchange(bee.queue_name)
+      queue, exch = queue_and_exchange(bee)
       queue.bind(exch, :key => "#{bee.queue_name}")
-      queue.subscribe(:consumer_tag => "#{bee.queue_name}_#{bee.identity}") do |data|
+      
+      opts = {:consumer_tag => consumer_tag(bee)}
+      opts.merge!(:header => true) if bee.accepts_header?
+      
+      queue.subscribe(opts) do |data|
         msg = Honey.unwrap(data)
         bee.on_data(msg)
         queue.ack
       end
+    end
+    
+    def teardown_subscription(bee)
+      queue, exch = queue_and_exchange(bee)
+      queue.bind(exch, :key => "#{bee.queue_name}")
+      
+      queue.unsubscribe({:consumer_tag => consumer_tag(bee)})
+    end
+    
+    private
+    
+    def queue_and_exchange(bee)
+      queue = instance.queue(bee.queue_name)
+      exch = instance.exchange(bee.queue_name)
+      [queue, exch]
     end
     
     def instance(o={})
@@ -57,6 +75,10 @@ module Troph
       @instance = ::Bunny.new(o)
       @instance.start
       @instance
+    end
+    
+    def consumer_tag(bee)
+      "#{bee.queue_name}_#{bee.identity}"
     end
     
   end

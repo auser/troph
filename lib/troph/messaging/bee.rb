@@ -21,11 +21,9 @@
 =end
 module Troph
   class Bee
-    include Comm
     attr_reader :hive, :comm
     
     def initialize(hive=nil)
-      raise Exception.new("Not a valid hive passed for bee") unless hive && hive.is_a?(Hive)
       @hive = hive
       @comm = hive.comm
       after_create
@@ -33,7 +31,7 @@ module Troph
     
     def init
       setup_periodic_block
-      fork {setup_local_listener}
+      setup_local_listener
     end
     
     def after_create
@@ -56,15 +54,33 @@ module Troph
     def queue_name;@queue_name ||= self.class.to_s.downcase;end    
     def self.queue_name;self.to_s.downcase;end
     
-    def self.private?;@private_bee == true;end    
-    def self.private_bee(n=false);@private_bee = n;end
+    def self.accepts_header(bool=false);@accepts_header ||= bool;end
+    def accepts_header?;self.class.accepts_header == true;end
     
+    # Private bee
+    def private?;self.class.private?;end
+    def self.private_bee(n=false);@private_bee = n;end
+    def self.private?;@private_bee == true;end
+    
+    # Setup the periodic_timer block
     def setup_periodic_block
       self.class.run_after_blocks.each {|s, b| Thread.new {EM.run {EM.add_periodic_timer(s, Proc.new {b.call(self)})}} }
     end
     
     def setup_local_listener
-      comm.setup_subscription(self)
+      pid = fork do
+         Signal.trap(:USR1) { shutdown }
+         Signal.trap(:TERM) { shutdown }
+         Signal.trap(:INT)  { shutdown }
+         comm.setup_subscription(self)
+       end
+       Process.detach(pid)      
+    end
+    
+    def shutdown
+      Troph::Log.info "Stopping #{self}"
+      teardown_subscription(self)
+      exit()
     end
     
     # Idea taken so graciously from nanite
@@ -77,8 +93,18 @@ module Troph
     end
     
     def self.inherited(receiver)
-      sym = receiver.to_s.downcase.to_sym
+      sym = receiver.to_s.snake_case.to_sym
       hive << sym unless hive.include?(sym)
+    end
+    
+    def method_missing(m,*a,&block)
+      if hive && hive.respond_to?(m)
+        hive.send(m,*a,&block)
+      elsif comm && comm.respond_to?(m)
+        comm.send(m,*a,&block)
+      else
+        super
+      end
     end
     
   end
