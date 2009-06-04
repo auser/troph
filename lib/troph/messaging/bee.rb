@@ -25,7 +25,7 @@ module Troph
     
     def initialize(hive=nil)
       @hive = hive
-      @comm = hive.comm
+      @comm = hive.comm if hive
       after_create
     end
     

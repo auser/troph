@@ -68,7 +68,7 @@ module Troph
     def instance(o={})
       return @instance if @instance      
       @instance = ::Bunny.new(o)
-      @instance.start
+      @instance.start unless testing?
       @instance
     end
     
@@ -82,6 +82,10 @@ module Troph
     
     def consumer_tag(bee)
       "#{bee.queue_name}_#{bee.identity}"
+    end
+    
+    def testing?
+      @testing == true
     end
     
   end

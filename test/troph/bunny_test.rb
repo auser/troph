@@ -4,6 +4,7 @@ class BunnyTest < Test::Unit::TestCase
   context "instance" do
     setup do
       @bunny = Troph::Bunny.new
+      @bunny.testing = true
     end
 
     should "be a new bunny client instance for .instance" do
@@ -15,8 +16,8 @@ class BunnyTest < Test::Unit::TestCase
       assert_equal b, @bunny.instance
     end
     
-    should "be connected" do
-      assert_equal :connected, @bunny.instance.status
+    should "not be connected (in testing mode)" do
+      assert_equal :not_connected, @bunny.instance.status
     end
     
   end

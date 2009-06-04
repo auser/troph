@@ -11,6 +11,20 @@ class BeeTest < Test::Unit::TestCase
       assert Solitude.private?
     end
     
+    context "bee" do
+      setup do
+        @bee = Troph::Bee.new
+      end
+
+      should "be able to set it's ID as random" do
+        assert_not_nil @bee.identity
+      end
+      
+      should "have the queue name the same as the snake_cased class" do
+        assert_equal "troph::bee", @bee.queue_name
+      end
+      
+    end
   end
   
 end
