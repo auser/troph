@@ -10,12 +10,12 @@ module Troph
     
     def self.from_data(data)
       package = Marshal.load(data)
-      package.payload = Honey.unwrap(package.payload)
+      package.payload = Honey.unwrap(package.payload) if package.payload
       package
     end
     
     def dump
-      @payload = Honey.package(@payload)
+      @payload = Honey.package(payload) if payload
       Marshal.dump(self)
     end
     
